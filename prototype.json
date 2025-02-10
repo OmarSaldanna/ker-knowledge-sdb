@@ -1,0 +1,11 @@
+{
+	"name": "",
+	"description": "",
+	"llm": "llama3.2",
+	"embedding": "nomic-embed-text:latest",
+	"api": {
+		"port": 31416,
+		"host": "127.0.0.1",
+		"dev": true
+	}
+}
