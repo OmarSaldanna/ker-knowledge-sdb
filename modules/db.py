@@ -13,7 +13,7 @@ from typing import List
 class SDB:
     def __init__ (self, name: str):
         # check if the db exists
-        availables = [d for d in os.listdir(os.environ["COLLECTIONS_PATH"]) if os.path.isdir(d)]
+        availables = os.listdir(os.environ["COLLECTIONS_PATH"])
         if name not in availables:
             raise ValueError(f"SDB \"{name}\" doesn't exist")
         # if not

@@ -18,12 +18,17 @@ def get_file_content (path):
         try:
             # for each page in pdf
             for page_layout in extract_pages(path):
+                # save every page
+                page = ""
                 # for each element in page
                 for element in page_layout:
                     # if is text
                     if isinstance(element, LTTextContainer):
                         # then save it on content
-                        content.append(element.get_text())
+                        page += element.get_text()
+                # save the page
+                content.append(page)
+        # in case of error
         except Exception as e:
             print(f"Error Reading PDF: {e}")
 
@@ -31,12 +36,18 @@ def get_file_content (path):
 
     elif extension == ".docx":
         try:
+            page = ""
             # try to open it
             document = docx.Document(path)
             # for each paragraph
-            for paragraph in document.paragraphs:
+            for i, paragraph in enumerate(document.paragraphs):
                 # save the paragraph
-                content.append(paragraph.text)
+                page += paragraph.text + "\n\n"
+                # and every three pages save it
+                if (i+1) % 3 == 0:
+                    content.append(page)
+                    page = ""
+        # in case of error
         except Exception as e:
             print(f"Error Reading DOCX: {e}")
 

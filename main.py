@@ -5,15 +5,15 @@ import shutil
 from typing import List, Dict
 
 # import modules
+from modules.llm import chat
+from modules.db import new_sdb, SDB
 from modules.scrapper import get_file_content
 from modules.extras import move_to_sdb, which_sdb
 
-# these ones are imported bellow since they reduce the performance
-import_llm = "from modules.llm import chat"
-import_sdb = "from modules.db import new_sdb, SDB"
-
 # the main path of the project
 main_path = os.environ["COLLECTIONS_PATH"]
+# current dir, from where ker where executed
+current_dir = os.environ["CURRENT_PATH"] + "/"
 # get the current database
 current_sdb = which_sdb()
 
@@ -40,11 +40,11 @@ class Brain:
         }
 
     def __call__ (self, args: List[str]):
-        try:
-            self.commands[args[0]](args[1:])
-        except:
-            print('\033[91m' + "Unknown comand, type: " + '\033[0m' + "ker help" + '\033[91m' + " for more" + '\033[0m')
-            return
+        # try:
+        self.commands[args[0]](args[1:])
+        # except:
+            # print('\033[91m' + "Unknown comand, type: " + '\033[0m' + "ker help" + '\033[91m' + " for more" + '\033[0m')
+            # return
 
     # create an sdb
     def handle_create(self, args: List[str]) -> str:
@@ -64,6 +64,7 @@ class Brain:
         # and move to it
         print("Moving to " + '\033[94m' + name + '\033[0m')
         move_to_sdb(name)
+    
     # move to another sdb
     def handle_mv (self, args: List[str]) -> str:
         # if there's no name
@@ -104,8 +105,11 @@ class Brain:
             return
         # then try to remove it
         try:
+            # remove
             shutil.rmtree(os.environ["COLLECTIONS_PATH"] + name)
             print('\033[92m' + "Removed " + name + " successfully" + '\033[0m')
+            # and remove the current
+            move_to_sdb("")
         # in case of error
         except OSError as e:
             print('\033[91m' + "Error removing" + '\033[0m' + name + f":\n{e}")
@@ -121,8 +125,30 @@ class Brain:
     
     # add content to database
     def handle_add (self, args: List[str]) -> str:
-        return "on"
-    
+        # locate the db
+        name = which_sdb()
+        if name == "":
+            print('\033[91m' + "SDB not selected, use: " + f'\033[0mker mv [SDB name]')
+            return
+        # then get the list of files
+        if len(args) < 1:
+            print('\033[91m' + "No files given, use: " + f'\033[0mker add file.pdf text.txt ...')
+            return
+        # then there are files
+        print('\033[92m' + "Adding memories to " + '\033[0m' + name + '\033[92m' + "..." + '\033[0m')
+        # instance the db
+        sdb = SDB(name)
+        # for each file get the content
+        for file in args:
+            # try:
+            # copy the file to assets
+            new_path = os.environ["COLLECTIONS_PATH"] + f"{name}/assets/{file.split('/')[-1]}"
+            shutil.copyfile(current_dir + file, new_path)
+            # get the file content
+            print(len(get_file_content(new_path)))
+            # except:
+                # print('\033[91m' + "Error processing file " + f'\033[0m {file}...')
+
     # manually add content
     def handle_madd (self, args: List[str]) -> str:
         return "on"
@@ -155,7 +181,7 @@ class Brain:
 if __name__ == "__main__":
     print()
     # validate the first argument
-    if len(sys.argv) <= 1:
+    if len(sys.argv) < 1:
         print('\033[91m' + "Unknown comand, type: " + '\033[0m' + "ker help" + '\033[91m' + " for more" + '\033[0m')
     else:
         # instance the Ker brain
