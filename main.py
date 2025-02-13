@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import shutil
+import pyperclip
 from typing import List, Dict
 
 # import modules
@@ -78,7 +79,7 @@ class Brain:
         # get the name of the db
         name = args[0]
         # check if it exists
-        if name not in os.listdir(os.environ["COLLECTIONS_PATH"]):
+        if name not in os.listdir(main_path):
             print('\033[91m' + "SDB " + '\033[0m' + name + '\033[91m' +" not found" + '\033[0m')
             return
         # and save it
@@ -99,14 +100,14 @@ class Brain:
         # get the name of the db
         name = args[0]
         # check if it exists
-        if name not in os.listdir(os.environ["COLLECTIONS_PATH"]):
+        if name not in os.listdir(main_path):
             print('\033[91m' + "SDB " + '\033[0m' + name + '\033[91m' + " not found" + '\033[0m')
             return
         # then try to remove it
         try:
             # remove
-            shutil.rmtree(os.environ["COLLECTIONS_PATH"] + name)
-            print('\033[92m' + "Removed " + name + " successfully" + '\033[0m')
+            shutil.rmtree(main_path + name)
+            print('\033[92m' + "Removed " + name + '\033[0m')
             # and remove the current
             move_to_sdb("")
         # in case of error
@@ -115,11 +116,26 @@ class Brain:
 
     # list sdbs
     def handle_ls (self, args: List[str]) -> str:
-        print("Available SDBs:")
-        for db in os.listdir(os.environ["COLLECTIONS_PATH"]):
-            if not db.startswith("."):
-                print(f"\t- {db}")
-    
+        # if name was passed
+        if len(args) > 0:
+            name = args[0]
+            # check if the name is in collections
+            if name in os.listdir(main_path):
+                print('\033[92m' + "Files included in \033[0m" + name + ":")
+                # then check the included file
+                with open(main_path + name + "/included.txt", 'r') as f:
+                    for line in f:
+                        print('\t'+line, end='')
+            # if collection not found
+            else:
+                print('\033[91m' + "Not found collection: "+ '\033[0m' + name)
+        # else: list available dbs
+        else:
+            print('\033[91m' + "Available SDBs:" + '\033[0m')
+            for db in os.listdir(main_path):
+                if not db.startswith("."):
+                    print(f"\t- {db}")
+
 ################################################################################
     
     # add content to database
