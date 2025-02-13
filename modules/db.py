@@ -1,9 +1,11 @@
 import os
 import json
 import ollama
+import hashlib
 import chromadb
-import pyperclip
 from typing import List
+
+from modules.extras import hashx
 
 # collection
 #  |--- config.json
@@ -34,19 +36,9 @@ class SDB:
         # for every "text" on the docs, generate an embedding
         embeddings = [self._generate_embedding(doc) for doc in docs]
         # now generate ids
-        ids = [abs(hash(doc)) for doc in docs]
+        ids = [str(abs(hash(doc))) for doc in docs]
         # and add to collection
         self.collection.add(ids=ids, documents=docs, embeddings=embeddings)
-        print("Added successfully!")
-
-    def add_document_from_clipboard (self):
-        # get the clipboard content and make the embedding
-        embedding = self._generate_embedding(pyperclip.paste())
-        # generate the id
-        doc_id = abs(hash(pyperclip.paste()))
-        # and add it to collection
-        self.collection.add(ids=[doc_id], documents=[pyperclip.paste()], embeddings=[embedding])
-        print("Added successfully!")
 
     def query(self, query_text: str, n_results: int = 5):
         # make a query to the db

@@ -11,3 +11,11 @@ def which_sdb ():
 def move_to_sdb (name):
     with open(os.environ["FLAG_SDB_NAME"], 'w') as f:
         f.write(name)
+
+# function to generate hashes
+def hashx (string):
+    hash_obj = hashlib.sha256()
+    # convert the string to bytes and hash
+    hash_obj.update(string.encode('utf-8'))
+    # get the hex
+    return hash_obj.hexdigest()

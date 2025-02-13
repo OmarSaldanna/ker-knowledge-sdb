@@ -1,6 +1,7 @@
 import os
 import docx
 import pptx
+import pyperclip
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
 
@@ -94,3 +95,9 @@ def get_file_content (path):
 ##############################################################
 
     return content
+
+
+
+# get content from the clipboard
+def get_clipboard ():
+    return str(pyperclip.paste())

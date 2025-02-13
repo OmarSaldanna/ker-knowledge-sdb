@@ -7,8 +7,8 @@ from typing import List, Dict
 # import modules
 from modules.llm import chat
 from modules.db import new_sdb, SDB
-from modules.scrapper import get_file_content
 from modules.extras import move_to_sdb, which_sdb
+from modules.scrapper import get_file_content, get_clipboard
 
 # the main path of the project
 main_path = os.environ["COLLECTIONS_PATH"]
@@ -30,7 +30,6 @@ class Brain:
             'rm': self.handle_rm,
             'remove': self.handle_rm,
             'add': self.handle_add,
-            'madd': self.handle_madd,
             'set': self.handle_set,
             'use': self.handle_use,
             'usem': self.handle_usem,
@@ -140,22 +139,16 @@ class Brain:
         sdb = SDB(name)
         # for each file get the content
         for file in args:
-            # try:
-            # copy the file to assets
-            new_path = os.environ["COLLECTIONS_PATH"] + f"{name}/assets/{file.split('/')[-1]}"
-            shutil.copyfile(current_dir + file, new_path)
-            # get the file content
-            print(len(get_file_content(new_path)))
-            # except:
-                # print('\033[91m' + "Error processing file " + f'\033[0m {file}...')
-
-    # manually add content
-    def handle_madd (self, args: List[str]) -> str:
-        return "on"
-    
-    # config sdb settings
-    def handle_set (self, args: List[str]) -> str:
-        return "on"
+            try:
+                # copy the file to assets
+                new_path = os.environ["COLLECTIONS_PATH"] + f"{name}/assets/{file.split('/')[-1]}"
+                shutil.copyfile(current_dir + file, new_path)
+                # get the file content
+                file_content = get_file_content(new_path)
+                # finally add to db
+                sdb.add_documents("")
+            except:
+                print('\033[91m' + "Error processing file " + f'\033[0m {file}...')
 
 ################################################################################
 

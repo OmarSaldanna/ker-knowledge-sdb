@@ -1,3 +1,5 @@
+HIRIDB COREIDB
+
 
 Ker: Knowledge Semantic Data Base
 
@@ -9,15 +11,19 @@ Available Commands:
 
   create [db name]   Create a new DB
   mv [db name]       Move between DBs
-  set                Change data base presets
+  set [db name]      Change data base presets
+  rm [db name]       Remove an existant DB
   ls                 List data bases available
   
   --------------- DB Access -------------------
 
-  add  [files]       Add files to a DB
-  madd               Add input content DB
+  add [files]        Add files to a DB
   use                Chat with LLM
   usem               Chat with embedding
+  copy [new name]    Copy DB with a new name
+  export [to file]   Export DB as a file
+  import [file]      Import an exported DB
+  merge [names...]   Merge DBs into one new
 
   --------------- API -------------------------
 
