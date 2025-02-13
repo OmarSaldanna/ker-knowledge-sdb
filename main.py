@@ -7,8 +7,8 @@ from typing import List, Dict
 # import modules
 from modules.llm import chat
 from modules.db import new_sdb, SDB
+from modules.scrapper import get_file_content
 from modules.extras import move_to_sdb, which_sdb
-from modules.scrapper import get_file_content, get_clipboard
 
 # the main path of the project
 main_path = os.environ["COLLECTIONS_PATH"]
@@ -134,21 +134,32 @@ class Brain:
             print('\033[91m' + "No files given, use: " + f'\033[0mker add file.pdf text.txt ...')
             return
         # then there are files
-        print('\033[92m' + "Adding memories to " + '\033[0m' + name + '\033[92m' + "..." + '\033[0m')
+        print('\033[92m' + "Adding memories to " + '\033[0m' + name + '\033[92m' + "..." + '\033[0m\n')
         # instance the db
         sdb = SDB(name)
+        # counter of items
+        added_count = 0
         # for each file get the content
         for file in args:
-            try:
-                # copy the file to assets
-                new_path = os.environ["COLLECTIONS_PATH"] + f"{name}/assets/{file.split('/')[-1]}"
-                shutil.copyfile(current_dir + file, new_path)
+            # try:
                 # get the file content
-                file_content = get_file_content(new_path)
+                file_content, new_path = get_file_content(file, current_dir, name)
                 # finally add to db
-                sdb.add_documents("")
-            except:
-                print('\033[91m' + "Error processing file " + f'\033[0m {file}...')
+                added = sdb.add_documents(file_content)
+                # if it's correct, then save the file in assets
+                if added > 0:
+                    shutil.copyfile(current_dir + file, new_path)
+                    # count items
+                    added_count += added
+                    # and add the file name to a collection log
+                    with open(main_path + name + "/included.txt", 'a') as f:
+                        f.write(file+'\n')
+            # except:
+                # print('\033[91m' + "Error processing file " + f'\033[0m {file}')
+        print('\n\033[92m' + f"Added {added_count} items to \033[0m{name}")
+
+    def handle_set (self, args: List[str]) -> str:
+        return "handle set"
 
 ################################################################################
 

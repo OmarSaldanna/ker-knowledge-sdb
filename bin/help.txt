@@ -1,5 +1,3 @@
-HIRIDB COREIDB
-
 
 Ker: Knowledge Semantic Data Base
 
@@ -7,6 +5,7 @@ Usage:
   ker [command]
 
 Available Commands:
+
   --------------- DB Control ------------------
 
   create [db name]   Create a new DB

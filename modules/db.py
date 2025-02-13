@@ -36,9 +36,16 @@ class SDB:
         # for every "text" on the docs, generate an embedding
         embeddings = [self._generate_embedding(doc) for doc in docs]
         # now generate ids
-        ids = [str(abs(hash(doc))) for doc in docs]
-        # and add to collection
-        self.collection.add(ids=ids, documents=docs, embeddings=embeddings)
+        ids = [str(hashx(doc)) for doc in docs]
+        # check if any of the documents already exist
+        exist_any = self.collection.get(ids=ids[0])['documents']
+        if exist_any:
+            print('\033[93m' + ">>> coincidence on SDB, skipping..." + '\033[0m\n')
+            return 0
+        else:
+            # and add to collection
+            self.collection.add(ids=ids, documents=docs, embeddings=embeddings)
+            return len(ids)
 
     def query(self, query_text: str, n_results: int = 5):
         # make a query to the db

@@ -1,21 +1,26 @@
 import os
 import docx
 import pptx
-import pyperclip
+import shutil
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
+from modules.extras import hashx
 
-def get_file_content (path):
+def get_file_content (path, current_dir, collection):
     # get the file extension
-    _, extension = os.path.splitext(path)
+    extension = path.split('.')[-1]
     # make it lowercase
     extension = extension.lower()
+    # copy the file to assets
+    new_path = os.environ["COLLECTIONS_PATH"] + f"{collection}/assets/{hashx(path.split('/')[-1])}.{extension}"
     # the content
     content = []
+    # a flag
+    accepted = True
 
 ######### if pdf #############################################
     
-    if extension == ".pdf":
+    if extension == "pdf":
         try:
             # for each page in pdf
             for page_layout in extract_pages(path):
@@ -35,7 +40,7 @@ def get_file_content (path):
 
 ######### if word ############################################
 
-    elif extension == ".docx":
+    elif extension == "docx":
         try:
             page = ""
             # try to open it
@@ -54,7 +59,7 @@ def get_file_content (path):
 
 ######### if power point #####################################
 
-    elif extension == ".pptx":
+    elif extension == "pptx":
         try:
             # try to open the presentation
             presentation = pptx.Presentation(path)
@@ -75,9 +80,9 @@ def get_file_content (path):
 
 ######### if txt ############################################
 
-    elif extension in [".txt", ".md"]:
-        text = ""
+    elif extension in ["txt", "md"]:
         try:
+            text = ""
             # open the txt file
             with open(path, "r", encoding="utf-8") as file:
                 # for each line
@@ -89,15 +94,14 @@ def get_file_content (path):
         except Exception as e:
             print(f"Error Reading TXT: {e}")
 
-    else:
-        print(f"File not supported, only .pdf .docx .pptx .txt .md")
-
 ##############################################################
 
-    return content
+    else:
+        print(f"File not supported, only .pdf .docx .pptx .txt .md")
+        accepted = False
+
+    if accepted:
+        print(f"processing {path} with {len(content)} items")
 
 
-
-# get content from the clipboard
-def get_clipboard ():
-    return str(pyperclip.paste())
+    return content, new_path

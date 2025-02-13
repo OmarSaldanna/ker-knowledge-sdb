@@ -1,4 +1,5 @@
 import os
+import hashlib
 
 def which_sdb ():
     try:
@@ -18,4 +19,4 @@ def hashx (string):
     # convert the string to bytes and hash
     hash_obj.update(string.encode('utf-8'))
     # get the hex
-    return hash_obj.hexdigest()
+    return str(hash_obj.hexdigest())[:32]
