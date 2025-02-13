@@ -12,8 +12,8 @@ Available Commands:
   mv [db name]       Move between DBs
   set [db name]      Change data base presets
   rm [db name]       Remove an existant DB
-  ls                 List data bases available
   ls [db name]       See files added to SDB
+  ls                 List data bases available
 
   --------------- DB Handling ------------------
 

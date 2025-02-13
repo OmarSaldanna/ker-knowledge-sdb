@@ -1,3 +1,6 @@
+# nota: modificar el .md para que separe por titulos y secciones
+# nota: probar los pptx
+
 import os
 import docx
 import pptx
@@ -80,7 +83,7 @@ def get_file_content (path, current_dir, collection):
 
 ######### if txt ############################################
 
-    elif extension in ["txt", "md"]:
+    elif extension == "txt":
         try:
             text = ""
             # open the txt file
@@ -94,12 +97,37 @@ def get_file_content (path, current_dir, collection):
         except Exception as e:
             print(f"Error Reading TXT: {e}")
 
+######### if md ##############################################
+
+    elif extension == "md":
+        try:
+            text = ""
+            # open the txt file
+            with open(path, "r", encoding="utf-8") as file:
+                # for each line
+                for line in file:
+                    # if this is a section
+                    if line.startswith("## "): # then is a title
+                        # if the text isn't empty
+                        if text != "":
+                            # add it and clear it
+                            content.append(text)
+                            text = ""
+                        # then add the next title and content
+                        text += line
+            # save text in content
+            content.append(text)
+        except Exception as e:
+            print(f"Error Reading TXT: {e}")
+
 ##############################################################
 
+    # if other extension
     else:
         print(f"File not supported, only .pdf .docx .pptx .txt .md")
         accepted = False
 
+    # if other file was accepted
     if accepted:
         print(f"processing {path} with {len(content)} items")
 

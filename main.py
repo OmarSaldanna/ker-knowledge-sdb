@@ -40,11 +40,13 @@ class Brain:
         }
 
     def __call__ (self, args: List[str]):
-        # try:
-        self.commands[args[0]](args[1:])
-        # except:
-            # print('\033[91m' + "Unknown comand, type: " + '\033[0m' + "ker help" + '\033[91m' + " for more" + '\033[0m')
-            # return
+        # if the command was found
+        if args[0] in self.commands.keys():
+            # do it
+            self.commands[args[0]](args[1:])
+        else:
+            print('\033[91m' + "Unknown comand, type: " + '\033[0m' + "ker help" + '\033[91m' + " for more" + '\033[0m')
+            return
 
     # create an sdb
     def handle_create(self, args: List[str]) -> str:
@@ -131,7 +133,7 @@ class Brain:
                 print('\033[91m' + "Not found collection: "+ '\033[0m' + name)
         # else: list available dbs
         else:
-            print('\033[91m' + "Available SDBs:" + '\033[0m')
+            print('\033[92m' + "Available SDBs:" + '\033[0m')
             for db in os.listdir(main_path):
                 if not db.startswith("."):
                     print(f"\t- {db}")
@@ -157,7 +159,7 @@ class Brain:
         added_count = 0
         # for each file get the content
         for file in args:
-            # try:
+            try:
                 # get the file content
                 file_content, new_path = get_file_content(file, current_dir, name)
                 # finally add to db
@@ -170,12 +172,29 @@ class Brain:
                     # and add the file name to a collection log
                     with open(main_path + name + "/included.txt", 'a') as f:
                         f.write(file+'\n')
-            # except:
-                # print('\033[91m' + "Error processing file " + f'\033[0m {file}')
+            except:
+                print('\033[91m' + "Error processing file " + f'\033[0m {file}')
+        # finally
         print('\n\033[92m' + f"Added {added_count} items to \033[0m{name}")
 
+    # copy the path to settings file
     def handle_set (self, args: List[str]) -> str:
-        return "handle set"
+        # check if a name was given
+        if len(args) > 0:
+            name = args[0]
+            # check if name is in sdb
+            if name in os.listdir(main_path):
+                # then copy the path to settings file
+                settings_file = main_path + name + "/config.json"
+                pyperclip.copy(settings_file)
+                # and a message
+                print('\033[92m' + "Path to config file copied to clipboard: " + '\033[0m' + settings_file)
+            # if collection not found
+            else:
+                print('\033[91m' + "Not found collection: "+ '\033[0m' + name)
+        # if no command given
+        else:
+            print('\033[91m' + "Missing SDB name"+ '\033[0m')
 
 ################################################################################
 
