@@ -47,7 +47,7 @@ class SDB:
             self.collection.add(ids=ids, documents=docs, embeddings=embeddings)
             return len(ids)
 
-    def query(self, query_text: str, n_results: int = 5):
+    def query(self, query_text: str, n_results: int):
         # make a query to the db
         query_embedding = self._generate_embedding(query_text)
         # fetch results from the db

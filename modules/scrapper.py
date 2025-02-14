@@ -1,4 +1,3 @@
-# nota: modificar el .md para que separe por titulos y secciones
 # nota: probar los pptx
 
 import os
@@ -9,6 +8,7 @@ from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
 from modules.extras import hashx
 
+# function to get content from files
 def get_file_content (path, current_dir, collection):
     # get the file extension
     extension = path.split('.')[-1]
@@ -113,8 +113,8 @@ def get_file_content (path, current_dir, collection):
                             # add it and clear it
                             content.append(text)
                             text = ""
-                        # then add the next title and content
-                        text += line
+                    # then add the next title and content
+                    text += line
             # save text in content
             content.append(text)
         except Exception as e:
@@ -130,6 +130,5 @@ def get_file_content (path, current_dir, collection):
     # if other file was accepted
     if accepted:
         print(f"processing {path} with {len(content)} items")
-
 
     return content, new_path
