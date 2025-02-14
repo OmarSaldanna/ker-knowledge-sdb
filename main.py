@@ -32,8 +32,8 @@ class Brain:
             'remove': self.handle_rm,
             'add': self.handle_add,
             'set': self.handle_set,
-            'use': self.handle_use,
-            'usem': self.handle_usem,
+            'chat': self.handle_use,
+            'chate': self.handle_usem,
             'start': self.handle_start,
             'stop': self.handle_stop
             # help command is considered on bin/ker
@@ -204,7 +204,37 @@ class Brain:
 
     # start a chat with only embedding
     def handle_usem (self, args: List[str]) -> str:
-        return "on"
+        # locate the db
+        name = which_sdb()
+        if name == "":
+            print('\033[91m' + "SDB not selected, use: " + f'\033[0mker mv [SDB name]')
+            return
+        # then get the number of coincidences
+        coincidences = int(os.environ["DEFAULT_COINCIDENCES"])
+        # check if it was given
+        try:
+            # get it from the args
+            coincidences = int(args[0])
+        except:
+            pass
+        os.system("clear")
+        # then start the db
+        print('\033[92m' + "Embedding Chat on: \033[0m" + name + '\n')
+        sdb = SDB(name)
+        # start the chat
+        while True:
+            # get the prompt
+            prompt = input("\n\033[95m>>> prompt~$ \033[0m")
+            # to end the chat
+            if prompt in ["q", ";", "bye"]:
+                break
+            # then make the query
+            res = sdb.query(prompt, coincidences)
+            # print results
+            for r in res:
+                print(r)
+                print("\n","*****"*10, "\n")
+
 
 ################################################################################
 
